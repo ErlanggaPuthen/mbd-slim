@@ -12,10 +12,10 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 return function (App $app) {
 
     // get
-    $app->get('/countries', function (Request $request, Response $response) {
+    $app->get('/pelanggan', function (Request $request, Response $response) {
         $db = $this->get(PDO::class);
 
-        $query = $db->query('SELECT * FROM countries');
+        $query = $db->query('SELECT * FROM pelanggan');
         $results = $query->fetchAll(PDO::FETCH_ASSOC);
         $response->getBody()->write(json_encode($results));
 

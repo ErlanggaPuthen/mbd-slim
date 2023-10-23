@@ -22,11 +22,53 @@ return function (App $app) {
         return $response->withHeader("Content-Type", "application/json");
     });
 
-    // get by id
-    $app->get('/countries/{id}', function (Request $request, Response $response, $args) {
+    $app->get('/produk', function (Request $request, Response $response) {
         $db = $this->get(PDO::class);
 
-        $query = $db->prepare('SELECT * FROM countries WHERE id=?');
+        $query = $db->query('SELECT * FROM produk');
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        $response->getBody()->write(json_encode($results));
+
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
+    $app->get('/pesanan', function (Request $request, Response $response) {
+        $db = $this->get(PDO::class);
+
+        $query = $db->query('SELECT * FROM pesanan');
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        $response->getBody()->write(json_encode($results));
+
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
+    // get by id
+    $app->get('/pelanggan/{id}', function (Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+
+        $query = $db->prepare('SELECT * FROM pelanggan WHERE id_pelanggan=?');
+        $query->execute([$args['id']]);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        $response->getBody()->write(json_encode($results[0]));
+
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
+    $app->get('/produk/{id}', function (Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+
+        $query = $db->prepare('SELECT * FROM produk WHERE id_produk=?');
+        $query->execute([$args['id']]);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        $response->getBody()->write(json_encode($results[0]));
+
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
+    $app->get('/pesanan/{id}', function (Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+
+        $query = $db->prepare('SELECT * FROM pesanan WHERE id_pesanan`=?');
         $query->execute([$args['id']]);
         $results = $query->fetchAll(PDO::FETCH_ASSOC);
         $response->getBody()->write(json_encode($results[0]));

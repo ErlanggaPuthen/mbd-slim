@@ -42,6 +42,16 @@ return function (App $app) {
         return $response->withHeader("Content-Type", "application/json");
     });
 
+    $app->get('/detail_pesanan', function (Request $request, Response $response) {
+        $db = $this->get(PDO::class);
+
+        $query = $db->query('SELECT * FROM detail_pesanan');
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        $response->getBody()->write(json_encode($results));
+
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
     // get by id
     $app->get('/pelanggan/{id}', function (Request $request, Response $response, $args) {
         $db = $this->get(PDO::class);
@@ -69,6 +79,17 @@ return function (App $app) {
         $db = $this->get(PDO::class);
 
         $query = $db->prepare('SELECT * FROM pesanan WHERE id_pesanan`=?');
+        $query->execute([$args['id']]);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        $response->getBody()->write(json_encode($results[0]));
+
+        return $response->withHeader("Content-Type", "application/json");
+    });
+
+    $app->get('/detail_pesanan/{id}', function (Request $request, Response $response, $args) {
+        $db = $this->get(PDO::class);
+
+        $query = $db->prepare('SELECT * FROM detail_pesanan WHERE id_detail_pesanan`=?');
         $query->execute([$args['id']]);
         $results = $query->fetchAll(PDO::FETCH_ASSOC);
         $response->getBody()->write(json_encode($results[0]));

@@ -217,14 +217,86 @@ return function (App $app) {
         return $response;
     });
 
+    $app->put('/update_pesanan', function (Request $request, Response $response, $args) {
+        $data = $request->getParsedBody(); 
+    
+        $id_pesanan = $args['id_pesanan'];
+        $tanggal_pesanan = $data['tanggal_pesanan'];
+        $id_pelanggan = $data['id_pelanggan'];
+        $total_harga = $data['total_harga'];
+    
+        $db = $this->get(PDO::class);
+    
+        $query = $db->prepare('CALL UpdatePesanan(:id_pesanan, :tanggal_pesanan, :id_pelanggan, :total_harga)');
+        $query->bindParam(':id_pesanan', $id_pesanan, PDO::PARAM_INT);
+        $query->bindParam(':tanggal_pesanan', $tanggal_pesanan, PDO::PARAM_DATE);
+        $query->bindParam(':id_pelanggan', $id_pelanggan, PDO::PARAM_INT);
+        $query->bindParam(':total_harga', $total_harga, PDO::PARAM_DECIMAL);
+    
+        $query->execute();
+    
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(json_encode(['message' => 'Update Pesanan Berhasil']));
+    
+        return $response;
+    });
+
+    $app->put('/update_pelanggan', function (Request $request, Response $response, $args) {
+        $data = $request->getParsedBody(); 
+    
+        $id_pelanggan = $args['id_pelanggan'];
+        $nama_pelanggan = $data['nama_pelanggan'];
+        $alamat = $data['alamat'];
+        $no_telepon = $data['no_telepon'];
+    
+        $db = $this->get(PDO::class);
+    
+        $query = $db->prepare('CALL UpdatePelanggan(:id_pelanggan, :nama_pelanggan, :alamat, :no_telepon)');
+        $query->bindParam(':id_pelanggan', $id_produk, PDO::PARAM_INT);
+        $query->bindParam(':nama_pelanggan', $nama_produk, PDO::PARAM_VARCHAR);
+        $query->bindParam(':alamat', $harga, PDO::PARAM_VARCHAR);
+        $query->bindParam(':no_telepon', $stok, PDO::PARAM_VARCHAR);
+    
+        $query->execute();
+    
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(json_encode(['message' => 'Update Pelanggan Berhasil']));
+    
+        return $response;
+    });
+
+    $app->put('/update_detail_pesanan', function (Request $request, Response $response, $args) {
+        $data = $request->getParsedBody();
+    
+        $id_produk = $args['id_produk'];
+        $nama_produk = $data['nama_produk'];
+        $harga = $data['harga'];
+        $stok = $data['stok'];
+    
+        $db = $this->get(PDO::class);
+    
+        $query = $db->prepare('CALL UpdateProduk(:id_produk, :nama_produk, :harga, :stok)');
+        $query->bindParam(':id_produk', $id_produk, PDO::PARAM_INT);
+        $query->bindParam(':nama_produk', $nama_produk, PDO::PARAM_VARCHAR);
+        $query->bindParam(':harga', $harga, PDO::PARAM_DECIMAL);
+        $query->bindParam(':stok', $stok, PDO::PARAM_INT);
+    
+        $query->execute();
+    
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(json_encode(['message' => 'Update Produk Berhasil']));
+    
+        return $response;
+    });
+
     // delete data
     $app->delete('/delete_produk', function (Request $request, Response $response, $args) {
-        $id_produk = $args['id_produk']; // Ambil ID mobil dari parameter URL
+        $id_produk = $args['id_produk']; // Ambil ID produk dari parameter URL
     
         $db = $this->get(PDO::class);
     
         $query = $db->prepare('CALL DeleteProduk(:id_produk)');
-        $query->bindParam(':id_produk', $id, PDO::PARAM_INT);
+        $query->bindParam(':id_produk', $id_produk, PDO::PARAM_INT);
     
         $query->execute();
     
@@ -234,18 +306,50 @@ return function (App $app) {
         return $response;
     });
 
-    $app->delete('/delete_produk', function (Request $request, Response $response, $args) {
-        $id_produk = $args['id_produk']; // Ambil ID mobil dari parameter URL
+    $app->delete('/delete_pesanan', function (Request $request, Response $response, $args) {
+        $id_pesanan = $args['id_pesanan']; // Ambil ID pesanan dari parameter URL
     
         $db = $this->get(PDO::class);
     
-        $query = $db->prepare('CALL DeleteProduk(:id_produk)');
-        $query->bindParam(':id_produk', $id, PDO::PARAM_INT);
+        $query = $db->prepare('CALL DeletePesanan(:id_pesanan)');
+        $query->bindParam(':id_pesanan', $id_pesanan, PDO::PARAM_INT);
     
         $query->execute();
     
         $response = $response->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode(['message' => 'Produk Berhasil Dihapus']));
+        $response->getBody()->write(json_encode(['message' => 'Pesanan Berhasil Dihapus']));
+    
+        return $response;
+    });
+
+    $app->delete('/delete_pelanggan', function (Request $request, Response $response, $args) {
+        $id_pelanggan = $args['id_pelanggan']; // Ambil ID pelanggan dari parameter URL
+    
+        $db = $this->get(PDO::class);
+    
+        $query = $db->prepare('CALL DeletePelanggan(:id_pelanggan)');
+        $query->bindParam(':id_pelanggan', $id_pelanggan, PDO::PARAM_INT);
+    
+        $query->execute();
+    
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(json_encode(['message' => 'Pelanggan Berhasil Dihapus']));
+    
+        return $response;
+    });
+
+    $app->delete('/delete_detail_pesanan', function (Request $request, Response $response, $args) {
+        $id_detail_pesanan = $args['id_detail_pesanan']; // Ambil ID detail_pesanan dari parameter URL
+    
+        $db = $this->get(PDO::class);
+    
+        $query = $db->prepare('CALL DeleteDetailPesanan(:id_detail_pesanan)');
+        $query->bindParam(':id_detail_pesanan', $id_detail_pesanan, PDO::PARAM_INT);
+    
+        $query->execute();
+    
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(json_encode(['message' => 'Detail Pesanan Berhasil Dihapus']));
     
         return $response;
     });

@@ -15,7 +15,7 @@ return function (App $app) {
     $app->get('/pelanggan', function (Request $request, Response $response) {
         $db = $this->get(PDO::class);
 
-        $query = $db->query('SELECT * FROM pelanggan');
+        $query = $db->query('CALL GetPelanggan()');
         $results = $query->fetchAll(PDO::FETCH_ASSOC);
         $response->getBody()->write(json_encode($results));
 
@@ -25,7 +25,7 @@ return function (App $app) {
     $app->get('/produk', function (Request $request, Response $response) {
         $db = $this->get(PDO::class);
 
-        $query = $db->query('SELECT * FROM produk');
+        $query = $db->query('CALL GetProduk');
         $results = $query->fetchAll(PDO::FETCH_ASSOC);
         $response->getBody()->write(json_encode($results));
 
@@ -35,7 +35,7 @@ return function (App $app) {
     $app->get('/pesanan', function (Request $request, Response $response) {
         $db = $this->get(PDO::class);
 
-        $query = $db->query('SELECT * FROM pesanan');
+        $query = $db->query('CALL GetPesanan');
         $results = $query->fetchAll(PDO::FETCH_ASSOC);
         $response->getBody()->write(json_encode($results));
 
@@ -45,7 +45,7 @@ return function (App $app) {
     $app->get('/detail_pesanan', function (Request $request, Response $response) {
         $db = $this->get(PDO::class);
 
-        $query = $db->query('SELECT * FROM detail_pesanan');
+        $query = $db->query('CALL GetDetailPesanan');
         $results = $query->fetchAll(PDO::FETCH_ASSOC);
         $response->getBody()->write(json_encode($results));
 

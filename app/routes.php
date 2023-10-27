@@ -193,65 +193,61 @@ return function (App $app) {
     });
 
     // put data
-    $app->put('/update_produk/{id}', function (Request $request, Response $response, $args) {
+    $app->put('/update_produk', function (Request $request, Response $response, $args) {
         $data = $request->getParsedBody(); // Ambil data yang dikirim dalam body PUT request
     
-        $id = $args['id']; // Ambil ID mobil dari parameter URL
-        $merk = $data['merk'];
-        $kapasitas = $data['kapasitas'];
-        $harga_rental_perhari = $data['harga_rental_perhari'];
+        $id_produk = $args['id_produk']; // Ambil ID mobil dari parameter URL
+        $nama_produk = $data['nama_produk'];
+        $harga = $data['harga'];
+        $stok = $data['stok'];
     
         $db = $this->get(PDO::class);
     
-        $query = $db->prepare('CALL UpdateMobil(:id, :merk, :kapasitas, :harga_rental_perhari)');
-        $query->bindParam(':id', $id, PDO::PARAM_INT);
-        $query->bindParam(':merk', $merk, PDO::PARAM_STR);
-        $query->bindParam(':kapasitas', $kapasitas, PDO::PARAM_INT);
-        $query->bindParam(':harga_rental_perhari', $harga_rental_perhari, PDO::PARAM_INT);
+        $query = $db->prepare('CALL UpdateProduk(:id_produk, :nama_produk, :harga, :stok)');
+        $query->bindParam(':id_produk', $id_produk, PDO::PARAM_INT);
+        $query->bindParam(':nama_produk', $nama_produk, PDO::PARAM_VARCHAR);
+        $query->bindParam(':harga', $harga, PDO::PARAM_DECIMAL);
+        $query->bindParam(':stok', $stok, PDO::PARAM_INT);
     
         $query->execute();
     
         $response = $response->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode(['message' => 'Mobil berhasil diperbarui']));
+        $response->getBody()->write(json_encode(['message' => 'Update Produk Berhasil']));
     
         return $response;
     });
 
-        return $response->withHeader("Content-Type", "application/json");
-    });
-
     // delete data
-    $app->delete('/countries/{id}', function (Request $request, Response $response, $args) {
-        $currentId = $args['id'];
+    $app->delete('/delete_produk', function (Request $request, Response $response, $args) {
+        $id_produk = $args['id_produk']; // Ambil ID mobil dari parameter URL
+    
         $db = $this->get(PDO::class);
-
-        try {
-            $query = $db->prepare('DELETE FROM countries WHERE id = ?');
-            $query->execute([$currentId]);
-
-            if ($query->rowCount() === 0) {
-                $response = $response->withStatus(404);
-                $response->getBody()->write(json_encode(
-                    [
-                        'message' => 'Data tidak ditemukan'
-                    ]
-                ));
-            } else {
-                $response->getBody()->write(json_encode(
-                    [
-                        'message' => 'country dengan id ' . $currentId . ' dihapus dari database'
-                    ]
-                ));
-            }
-        } catch (PDOException $e) {
-            $response = $response->withStatus(500);
-            $response->getBody()->write(json_encode(
-                [
-                    'message' => 'Database error ' . $e->getMessage()
-                ]
-            ));
-        }
-
-        return $response->withHeader("Content-Type", "application/json");
+    
+        $query = $db->prepare('CALL DeleteProduk(:id_produk)');
+        $query->bindParam(':id_produk', $id, PDO::PARAM_INT);
+    
+        $query->execute();
+    
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(json_encode(['message' => 'Produk Berhasil Dihapus']));
+    
+        return $response;
     });
+
+    $app->delete('/delete_produk', function (Request $request, Response $response, $args) {
+        $id_produk = $args['id_produk']; // Ambil ID mobil dari parameter URL
+    
+        $db = $this->get(PDO::class);
+    
+        $query = $db->prepare('CALL DeleteProduk(:id_produk)');
+        $query->bindParam(':id_produk', $id, PDO::PARAM_INT);
+    
+        $query->execute();
+    
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(json_encode(['message' => 'Produk Berhasil Dihapus']));
+    
+        return $response;
+    });
+
 };

@@ -98,19 +98,21 @@ return function (App $app) {
     });
 
     // post data
-    $app->post('/create_pelanggan', function (Request $request, Response $response) {
+    $app->post('/CreatePelanggan', function (Request $request, Response $response) {
         $data = $request->getParsedBody();
 
+        $id_pelanggan = $data["id_pelanggan"];
         $nama_pelanggan = $data["nama_pelanggan"]; // menambah dengan kolom baru
         $alamat = $data["alamat"];
         $no_telepon = $data["no_telepon"];
 
         $db = $this->get(PDO::class);
 
-        $query = $db->prepare('CALL CreatePelanggan(:nama_pelanggan, :alamat, :no_telepon)');
-        $query->bindParam(':nama_pelanggan', $nama_pelanggan, PDO::PARAM_VARCHAR);
-        $query->bindParam(':alamat', $alamat, PDO::PARAM_VARCHAR);
-        $query->bindParam(':no_telepon', $no_telepon, PDO::PARAM_VARCHAR);
+        $query = $db->prepare('CALL CreatePelanggan(:id_pelanggan, :nama_pelanggan, :alamat, :no_telepon)');
+        $query->bindParam(':id_pelanggan', $id_pelanggan, PDO::PARAM_INT);
+        $query->bindParam(':nama_pelanggan', $nama_pelanggan, PDO::PARAM_STR);
+        $query->bindParam(':alamat', $alamat, PDO::PARAM_STR);
+        $query->bindParam(':no_telepon', $no_telepon, PDO::PARAM_INT);
 
         // urutan harus sesuai dengan values
         $query->execute();
@@ -121,7 +123,7 @@ return function (App $app) {
         return $response;
     });
 
-    $app->post('/create_produk', function (Request $request, Response $response) {
+    $app->post('/CreateProduk', function (Request $request, Response $response) {
         $data = $request->getParsedBody();
 
         $nama_produk = $data["nama_produk"]; // menambah dengan kolom baru
@@ -193,10 +195,10 @@ return function (App $app) {
     });
 
     // put data
-    $app->put('/update_produk', function (Request $request, Response $response, $args) {
+    $app->put('/UpdateProduk/{id_produk}', function (Request $request, Response $response, $args) {
         $data = $request->getParsedBody(); // Ambil data yang dikirim dalam body PUT request
     
-        $id_produk = $args['id_produk']; // Ambil ID mobil dari parameter URL
+        $id_produk = $args['id_produk']; // Ambil ID produk dari parameter URL
         $nama_produk = $data['nama_produk'];
         $harga = $data['harga'];
         $stok = $data['stok'];
@@ -205,8 +207,8 @@ return function (App $app) {
     
         $query = $db->prepare('CALL UpdateProduk(:id_produk, :nama_produk, :harga, :stok)');
         $query->bindParam(':id_produk', $id_produk, PDO::PARAM_INT);
-        $query->bindParam(':nama_produk', $nama_produk, PDO::PARAM_VARCHAR);
-        $query->bindParam(':harga', $harga, PDO::PARAM_DECIMAL);
+        $query->bindParam(':nama_produk', $nama_produk, PDO::PARAM_STR);
+        $query->bindParam(':harga', $harga, PDO::PARAM_INT);
         $query->bindParam(':stok', $stok, PDO::PARAM_INT);
     
         $query->execute();
@@ -290,7 +292,7 @@ return function (App $app) {
     });
 
     // delete data
-    $app->delete('/delete_produk', function (Request $request, Response $response, $args) {
+    $app->delete('/DeleteProduk/{id_produk}', function (Request $request, Response $response, $args) {
         $id_produk = $args['id_produk']; // Ambil ID produk dari parameter URL
     
         $db = $this->get(PDO::class);

@@ -351,7 +351,7 @@ return function (App $app) {
         $query->execute();
     
         $response = $response->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode(['message' => 'Detail Pesanan Berhasil Dihapus']));
+        $response->getBody()->write(json_encode(['message' => 'Detail Pesanan Berhasil dihapus']));
     
         return $response;
     });

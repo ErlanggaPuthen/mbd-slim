@@ -12,7 +12,7 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 return function (App $app) {
 
     // get
-    $app->get('/pelanggan', function (Request $request, Response $response) {
+    $app->get('/Pelanggan', function (Request $request, Response $response) {
         $db = $this->get(PDO::class);
 
         $query = $db->query('CALL GetPelanggan()');
@@ -22,7 +22,7 @@ return function (App $app) {
         return $response->withHeader("Content-Type", "application/json");
     });
 
-    $app->get('/produk', function (Request $request, Response $response) {
+    $app->get('/Produk', function (Request $request, Response $response) {
         $db = $this->get(PDO::class);
 
         $query = $db->query('CALL GetProduk');
@@ -32,7 +32,7 @@ return function (App $app) {
         return $response->withHeader("Content-Type", "application/json");
     });
 
-    $app->get('/pesanan', function (Request $request, Response $response) {
+    $app->get('/Pesanan', function (Request $request, Response $response) {
         $db = $this->get(PDO::class);
 
         $query = $db->query('CALL GetPesanan');
@@ -42,7 +42,7 @@ return function (App $app) {
         return $response->withHeader("Content-Type", "application/json");
     });
 
-    $app->get('/detail_pesanan', function (Request $request, Response $response) {
+    $app->get('/DetailPesanan', function (Request $request, Response $response) {
         $db = $this->get(PDO::class);
 
         $query = $db->query('CALL GetDetailPesanan');
@@ -126,15 +126,17 @@ return function (App $app) {
     $app->post('/CreateProduk', function (Request $request, Response $response) {
         $data = $request->getParsedBody();
 
+        $id_produk = $data["id_produk"];
         $nama_produk = $data["nama_produk"]; // menambah dengan kolom baru
         $harga = $data["harga"];
         $stok = $data["stok"];
 
         $db = $this->get(PDO::class);
 
-        $query = $db->prepare('CALL CreateProduk(:nama_produk, :harga, :stok)');
-        $query->bindParam(':nama_produk', $nama_produk, PDO::PARAM_VARCHAR);
-        $query->bindParam(':harga', $harga, PDO::PARAM_DECIMAL);
+        $query = $db->prepare('CALL CreateProduk(:id_produk, :nama_produk, :harga, :stok)');
+        $query->bindParam(':id_produk', $id_produk, PDO::PARAM_INT);
+        $query->bindParam(':nama_produk', $nama_produk, PDO::PARAM_STR);
+        $query->bindParam(':harga', $harga, PDO::PARAM_INT);
         $query->bindParam(':stok', $stok, PDO::PARAM_INT);
 
         // urutan harus sesuai dengan values
@@ -146,19 +148,21 @@ return function (App $app) {
         return $response;
     });
 
-    $app->post('/create_pesanan', function (Request $request, Response $response) {
+    $app->post('/CreatePesanan', function (Request $request, Response $response) {
         $data = $request->getParsedBody();
 
+        $id_pesanan = $data["id_pesanan"];
         $tanggal_pesanan = $data["tanggal_pesanan"]; // menambah dengan kolom baru
         $id_pelanggan = $data["id_pelanggan"];
         $total_harga = $data["total_harga"];
 
         $db = $this->get(PDO::class);
 
-        $query = $db->prepare('CALL CreatePesanan(:tanggal_pesanan, :id_pelanggan, :total_harga)');
-        $query->bindParam(':tanggal_pesanan', $tanggal_pesanan, PDO::PARAM_DATE);
+        $query = $db->prepare('CALL CreatePesanan(:id_pesanan, :tanggal_pesanan, :id_pelanggan, :total_harga)');
+        $query->bindParam(':id_pesanan', $id_pesanan, PDO::PARAM_INT);
+        $query->bindParam(':tanggal_pesanan', $tanggal_pesanan, PDO::PARAM_STR);
         $query->bindParam(':id_pelanggan', $id_pelanggan, PDO::PARAM_INT);
-        $query->bindParam(':total_harga', $total_harga, PDO::PARAM_DECIMAL);
+        $query->bindParam(':total_harga', $total_harga, PDO::PARAM_INT);
 
         // urutan harus sesuai dengan values
         $query->execute();
@@ -169,21 +173,23 @@ return function (App $app) {
         return $response;
     });
 
-    $app->post('/create_detail_pesanan', function (Request $request, Response $response) {
+    $app->post('/CreateDetailPesanan', function (Request $request, Response $response) {
         $data = $request->getParsedBody();
 
-        $id_pesanan = $data["id_pesanan"]; // menambah dengan kolom baru
+        $id_detail_pesanan = $data["id_detail_pesanan"]; // menambah dengan kolom baru
+        $id_pesanan = $data["id_pesanan"];
         $id_produk = $data["id_produk"];
         $jumlah_pesanan = $data["jumlah_pesanan"];
         $subtotal = $data["subtotal"];
 
         $db = $this->get(PDO::class);
 
-        $query = $db->prepare('CALL CreateDetailPesanan(:id_pesanan, :id_produk, :jumlah_pesanan, :subtotal)');
+        $query = $db->prepare('CALL CreateDetailPesanan(:id_detail_pesanan, :id_pesanan, :id_produk, :jumlah_pesanan, :subtotal)');
+        $query->bindParam(':id_detail_pesanan', $id_detail_pesanan, PDO::PARAM_INT);
         $query->bindParam(':id_pesanan', $id_pesanan, PDO::PARAM_INT);
         $query->bindParam(':id_produk', $id_produk, PDO::PARAM_INT);
         $query->bindParam(':jumlah_pesanan', $jumlah_pesanan, PDO::PARAM_INT);
-        $query->bindParam(':subtotal', $subtotal, PDO::PARAM_DECIMAL);
+        $query->bindParam(':subtotal', $subtotal, PDO::PARAM_INT);
 
         // urutan harus sesuai dengan values
         $query->execute();
@@ -195,6 +201,30 @@ return function (App $app) {
     });
 
     // put data
+    $app->put('/UpdatePelanggan/{id_pelanggan}', function (Request $request, Response $response, $args) {
+        $data = $request->getParsedBody(); 
+    
+        $id_pelanggan = $args['id_pelanggan'];
+        $nama_pelanggan = $data['nama_pelanggan'];
+        $alamat = $data['alamat'];
+        $no_telepon = $data['no_telepon'];
+    
+        $db = $this->get(PDO::class);
+    
+        $query = $db->prepare('CALL UpdatePelanggan(:id_pelanggan, :nama_pelanggan, :alamat, :no_telepon)');
+        $query->bindParam(':id_pelanggan', $id_produk, PDO::PARAM_INT);
+        $query->bindParam(':nama_pelanggan', $nama_produk, PDO::PARAM_STR);
+        $query->bindParam(':alamat', $harga, PDO::PARAM_STR);
+        $query->bindParam(':no_telepon', $stok, PDO::PARAM_INT);
+    
+        $query->execute();
+    
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(json_encode(['message' => 'Update Pelanggan Berhasil']));
+    
+        return $response;
+    });
+
     $app->put('/UpdateProduk/{id_produk}', function (Request $request, Response $response, $args) {
         $data = $request->getParsedBody(); // Ambil data yang dikirim dalam body PUT request
     
@@ -219,7 +249,7 @@ return function (App $app) {
         return $response;
     });
 
-    $app->put('/update_pesanan', function (Request $request, Response $response, $args) {
+    $app->put('/UpdatePesanan/{id_pesanan}', function (Request $request, Response $response, $args) {
         $data = $request->getParsedBody(); 
     
         $id_pesanan = $args['id_pesanan'];
@@ -231,9 +261,9 @@ return function (App $app) {
     
         $query = $db->prepare('CALL UpdatePesanan(:id_pesanan, :tanggal_pesanan, :id_pelanggan, :total_harga)');
         $query->bindParam(':id_pesanan', $id_pesanan, PDO::PARAM_INT);
-        $query->bindParam(':tanggal_pesanan', $tanggal_pesanan, PDO::PARAM_DATE);
+        $query->bindParam(':tanggal_pesanan', $tanggal_pesanan, PDO::PARAM_STR);
         $query->bindParam(':id_pelanggan', $id_pelanggan, PDO::PARAM_INT);
-        $query->bindParam(':total_harga', $total_harga, PDO::PARAM_DECIMAL);
+        $query->bindParam(':total_harga', $total_harga, PDO::PARAM_INT);
     
         $query->execute();
     
@@ -243,45 +273,23 @@ return function (App $app) {
         return $response;
     });
 
-    $app->put('/update_pelanggan', function (Request $request, Response $response, $args) {
-        $data = $request->getParsedBody(); 
-    
-        $id_pelanggan = $args['id_pelanggan'];
-        $nama_pelanggan = $data['nama_pelanggan'];
-        $alamat = $data['alamat'];
-        $no_telepon = $data['no_telepon'];
-    
-        $db = $this->get(PDO::class);
-    
-        $query = $db->prepare('CALL UpdatePelanggan(:id_pelanggan, :nama_pelanggan, :alamat, :no_telepon)');
-        $query->bindParam(':id_pelanggan', $id_produk, PDO::PARAM_INT);
-        $query->bindParam(':nama_pelanggan', $nama_produk, PDO::PARAM_VARCHAR);
-        $query->bindParam(':alamat', $harga, PDO::PARAM_VARCHAR);
-        $query->bindParam(':no_telepon', $stok, PDO::PARAM_VARCHAR);
-    
-        $query->execute();
-    
-        $response = $response->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode(['message' => 'Update Pelanggan Berhasil']));
-    
-        return $response;
-    });
-
-    $app->put('/update_detail_pesanan', function (Request $request, Response $response, $args) {
+    $app->put('/UpdateDetailPesanan/{id_detail_pesanan}', function (Request $request, Response $response, $args) {
         $data = $request->getParsedBody();
     
-        $id_produk = $args['id_produk'];
-        $nama_produk = $data['nama_produk'];
-        $harga = $data['harga'];
-        $stok = $data['stok'];
+        $id_detail_pesanan = $args['id_detail_pesanan'];
+        $id_pesanan = $data['id_pesanan'];
+        $id_produk = $data['id_produk'];
+        $jumlah_pesanan = $data['jumlah_pesanan'];
+        $subtotal = $data['subtotal'];
     
         $db = $this->get(PDO::class);
     
-        $query = $db->prepare('CALL UpdateProduk(:id_produk, :nama_produk, :harga, :stok)');
+        $query = $db->prepare('CALL UpdateDetailPesanan(:id_detail_pesanan, :id_pesanan, :id_produk, :jumlah_pesanan, :subtotal)');
+        $query->bindParam(':id_detail_pesanan', $id_detail_pesanan, PDO::PARAM_INT);
+        $query->bindParam(':id_pesanan', $id_pesanan, PDO::PARAM_INT);
         $query->bindParam(':id_produk', $id_produk, PDO::PARAM_INT);
-        $query->bindParam(':nama_produk', $nama_produk, PDO::PARAM_VARCHAR);
-        $query->bindParam(':harga', $harga, PDO::PARAM_DECIMAL);
-        $query->bindParam(':stok', $stok, PDO::PARAM_INT);
+        $query->bindParam(':jumlah_pesanan', $jumlah_pesanan, PDO::PARAM_INT);
+        $query->bindParam(':subtotal', $subtotal, PDO::PARAM_INT);
     
         $query->execute();
     
@@ -292,6 +300,22 @@ return function (App $app) {
     });
 
     // delete data
+    $app->delete('/DeletePelanggan/{id_pelanggan}', function (Request $request, Response $response, $args) {
+        $id_pelanggan = $args['id_pelanggan']; // Ambil ID pelanggan dari parameter URL
+    
+        $db = $this->get(PDO::class);
+    
+        $query = $db->prepare('CALL DeletePelanggan(:id_pelanggan)');
+        $query->bindParam(':id_pelanggan', $id_pelanggan, PDO::PARAM_INT);
+    
+        $query->execute();
+    
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(json_encode(['message' => 'Pelanggan Berhasil Dihapus']));
+    
+        return $response;
+    });
+
     $app->delete('/DeleteProduk/{id_produk}', function (Request $request, Response $response, $args) {
         $id_produk = $args['id_produk']; // Ambil ID produk dari parameter URL
     
@@ -308,7 +332,7 @@ return function (App $app) {
         return $response;
     });
 
-    $app->delete('/delete_pesanan', function (Request $request, Response $response, $args) {
+    $app->delete('/DeletePesanan/{id_pesanan}', function (Request $request, Response $response, $args) {
         $id_pesanan = $args['id_pesanan']; // Ambil ID pesanan dari parameter URL
     
         $db = $this->get(PDO::class);
@@ -324,23 +348,7 @@ return function (App $app) {
         return $response;
     });
 
-    $app->delete('/delete_pelanggan', function (Request $request, Response $response, $args) {
-        $id_pelanggan = $args['id_pelanggan']; // Ambil ID pelanggan dari parameter URL
-    
-        $db = $this->get(PDO::class);
-    
-        $query = $db->prepare('CALL DeletePelanggan(:id_pelanggan)');
-        $query->bindParam(':id_pelanggan', $id_pelanggan, PDO::PARAM_INT);
-    
-        $query->execute();
-    
-        $response = $response->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode(['message' => 'Pelanggan Berhasil Dihapus']));
-    
-        return $response;
-    });
-
-    $app->delete('/delete_detail_pesanan', function (Request $request, Response $response, $args) {
+    $app->delete('/DeleteDetailPesanan/{id_detail_pesanan}', function (Request $request, Response $response, $args) {
         $id_detail_pesanan = $args['id_detail_pesanan']; // Ambil ID detail_pesanan dari parameter URL
     
         $db = $this->get(PDO::class);

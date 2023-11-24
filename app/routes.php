@@ -112,7 +112,7 @@ return function (App $app) {
         $query->bindParam(':id_pelanggan', $id_pelanggan, PDO::PARAM_INT);
         $query->bindParam(':nama_pelanggan', $nama_pelanggan, PDO::PARAM_STR);
         $query->bindParam(':alamat', $alamat, PDO::PARAM_STR);
-        $query->bindParam(':no_telepon', $no_telepon, PDO::PARAM_INT);
+        $query->bindParam(':no_telepon', $no_telepon, PDO::PARAM_STR);
 
         // urutan harus sesuai dengan values
         $query->execute();
@@ -215,7 +215,7 @@ return function (App $app) {
         $query->bindParam(':id_pelanggan', $id_produk, PDO::PARAM_INT);
         $query->bindParam(':nama_pelanggan', $nama_produk, PDO::PARAM_STR);
         $query->bindParam(':alamat', $harga, PDO::PARAM_STR);
-        $query->bindParam(':no_telepon', $stok, PDO::PARAM_INT);
+        $query->bindParam(':no_telepon', $stok, PDO::PARAM_STR);
     
         $query->execute();
     
